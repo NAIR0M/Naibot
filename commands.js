@@ -26,7 +26,7 @@ const TEST_COMMAND = {
   contexts: [0, 1, 2],
 };
 
-const CAT = {
+const CAT_COMMAND = {
   name: 'cat',
   description: 'Nya',
   type: 1,
