@@ -26,6 +26,14 @@ const TEST_COMMAND = {
   contexts: [0, 1, 2],
 };
 
+const CAT = {
+  name: 'cat',
+  description: 'Nya',
+  type: 1,
+  integration_types: [0, 1],
+  contexts: [0, 1, 2],
+};
+
 // Command containing options
 const CHALLENGE_COMMAND = {
   name: 'challenge',
@@ -44,6 +52,6 @@ const CHALLENGE_COMMAND = {
   contexts: [0, 2],
 };
 
-const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND];
+const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND, CAT];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);

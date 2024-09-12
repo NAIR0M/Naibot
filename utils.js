@@ -42,6 +42,17 @@ export function getRandomEmoji() {
   return emojiList[Math.floor(Math.random() * emojiList.length)];
 }
 
+// Simple method that returns a random cat gif
+export function getRandomCatGif() {
+  const catGifs = [
+    'https://tenor.com/view/besito-catlove-gif-11397231996208728070',
+    'https://tenor.com/fr/view/cat-cat-meme-funnt-cat-black-cat-sleepy-cat-gif-16409614852005252877',
+    'https://tenor.com/fr/view/plink-cat-blink-blink-gif-4703038199058402686',
+    'https://tenor.com/fr/view/capple-gif-2199411213871050283'
+  ];
+  return catGifs[Math.floor(Math.random() * catGifs.length)];
+}
+
 export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
