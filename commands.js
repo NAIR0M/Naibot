@@ -35,7 +35,7 @@ const CAT_COMMAND = {
 };
 
 // Command containing options
-/*const CHALLENGE_COMMAND = {
+const CHALLENGE_COMMAND = {
   name: 'challenge',
   description: 'Challenge to a match of rock paper scissors',
   options: [
@@ -50,7 +50,7 @@ const CAT_COMMAND = {
   type: 1,
   integration_types: [0, 1],
   contexts: [0, 2],
-};*/
+};
 
 const VOICE_COMMAND = {
   name: 'join',
@@ -74,6 +74,6 @@ const VOICE_COMMAND = {
   }
 };
 
-const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND, CAT_COMMAND];
+const ALL_COMMANDS = [TEST_COMMAND, CAT_COMMAND, VOICE_COMMAND];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);
