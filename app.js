@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
  */
 app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async function (req, res) {
   // Interaction type and data
-  const { type, data } = req.body;
+  const { type, data, guild_id, member, voiceChannel } = req.body;
 
   /**
    * Handle verification requests
@@ -57,7 +57,6 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       });
     } else if (name === 'join') {
       // Join the voice channel
-      const voiceChannel = data.member.voice.channel;
       if (!voiceChannel) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
