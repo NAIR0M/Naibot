@@ -51,7 +51,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            content: 'You need to be in a voice channel for me to join!',
+            content: voiceChannelId,
           },
         });
       }
