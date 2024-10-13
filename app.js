@@ -57,7 +57,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       });
     } else if (name === 'join') {
       // Get the member's voice channel
-      const channel = client.channels.cache.get("ChannelID");
+      const channel = data.member?.voice?.channel;
   
       // Check if the member is in a voice channel
       if (!channel) {
@@ -70,11 +70,6 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       }
   
       // Join the voice channel
-      joinVoiceChannel({
-        channelId: channel.id,
-        guildId: channel.guild.id,
-        adapterCreator: channel.guild.voiceAdapterCreator,
-      });
   
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
