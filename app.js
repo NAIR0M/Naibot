@@ -56,26 +56,27 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         },
       });
     } else if (name === 'join') {
-      
+
       try {
+
+
+        // Join the voice channel
+        if (!voiceChannel) {
+          return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: 'You need to be in a voice channel to use this command!',
+            },
+          });
+        }
+
         joinVoiceChannel({
           channelId: voiceChannel.id,
           guildId: voiceChannel.guild.id,
           adapterCreator: voiceChannel.guild.voiceAdapterCreator,
         });
-      
         // Join the voice channel
-      if (!voiceChannel) {
-        return res.send({
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: 'You need to be in a voice channel to use this command!',
-          },
-        });
-      }
 
-      // Join the voice channel
-      
 
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
