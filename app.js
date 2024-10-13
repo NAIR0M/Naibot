@@ -56,20 +56,32 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         },
       });
     } else if (name === 'join') {
-      async (interaction) => {
-        const voiceChannel = interaction.member.voice.channel;
-        if (!voiceChannel) {
-          return interaction.reply('You need to be in a voice channel to use this command!');
-        }
-    
-        try {
-          await voiceChannel.join();
-          return interaction.reply('Joined the voice channel!');
-        } catch (error) {
-          console.error(error);
-          return interaction.reply('There was an error trying to join the voice channel!');
-        }
+      // Get the member's voice channel
+      const channel = data.member?.voice?.channel;
+  
+      // Check if the member is in a voice channel
+      if (!channel) {
+        return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: 'You need to be in a voice channel for me to join!',
+          },
+        });
       }
+  
+      // Join the voice channel
+      const connection = joinVoiceChannel({
+        channelId: channel.id,
+        guildId: channel.guild.id,
+        adapterCreator: channel.guild.voiceAdapterCreator,
+      });
+  
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `Joined the voice channel: ${channel.name}`,
+        },
+      });
     }
 
     console.error(`unknown command: ${name}`);

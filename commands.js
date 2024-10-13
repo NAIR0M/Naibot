@@ -58,20 +58,6 @@ const VOICE_COMMAND = {
   type: 1,
   integration_types: [0, 1],
   contexts: [0, 1, 2],
-  execute: async (interaction) => {
-    const voiceChannel = interaction.member.voice.channel;
-    if (!voiceChannel) {
-      return interaction.reply('You need to be in a voice channel to use this command!');
-    }
-
-    try {
-      await voiceChannel.join();
-      return interaction.reply('Joined the voice channel!');
-    } catch (error) {
-      console.error(error);
-      return interaction.reply('There was an error trying to join the voice channel!');
-    }
-  }
 };
 
 const ALL_COMMANDS = [TEST_COMMAND, CAT_COMMAND, VOICE_COMMAND];
