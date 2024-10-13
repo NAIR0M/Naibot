@@ -7,6 +7,7 @@ import {
 } from 'discord-interactions';
 import { getRandomEmoji } from './utils.js';
 import { getRandomCatGif } from './utils.js';
+import { joinVoiceChannel } from '@discordjs/voice';
 
 // Create an express app
 const app = express();
@@ -55,11 +56,14 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         },
       });
     } else if (name === 'join') {
-      // Get the member's voice channel
-      const channel =  message.member.voice.channel;
+      const channel = joinVoiceChannel({
+        channelId: interaction.member.voice.channel.id,
+        guildId: interaction.guild.id,
+        adapterCreator: interaction.guild.voiceAdapterCreator,
+      });
   
       // Check if the member is in a voice channel
-      if (!channel) {
+      /*if (!channel) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
@@ -75,7 +79,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         data: {
           content: `Joined the voice channel: ${channel.name}`,
         },
-      });
+      });*/
     }
 
     console.error(`unknown command: ${name}`);
