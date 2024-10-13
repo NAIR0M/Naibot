@@ -56,7 +56,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       });
     } else if (name === 'join') {
       // Get the member's voice channel
-      const channel = data.member?.voice?.channel;
+      const channel =  message.member.voice.channel;
   
       // Check if the member is in a voice channel
       if (!channel) {
