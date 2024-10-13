@@ -8,12 +8,11 @@ import {
 import { getRandomEmoji } from './utils.js';
 import { getRandomCatGif } from './utils.js';
 import { joinVoiceChannel } from '@discordjs/voice';
-import fetch from 'node-fetch'; // Use this to make API requests to Discord
 
 // Create an express app
 const app = express();
+// Get port, or default to 3000
 const PORT = process.env.PORT || 3000;
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN; // Make sure to include your bot token in the .env file
 
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
@@ -21,7 +20,7 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN; // Make sure to include your bo
  */
 app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async function (req, res) {
   // Interaction type and data
-  const { type, data, guild_id, member } = req.body;
+  const { type, data, guild_id, member, voiceChannel } = req.body;
 
   /**
    * Handle verification requests
@@ -39,7 +38,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
 
     // "test" command
     if (name === 'test') {
-      // Send a message into the channel where the command was triggered from
+      // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -48,7 +47,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         },
       });
     } else if (name === 'cat') {
-      // Send a message into the channel where the command was triggered from
+      // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -57,16 +56,16 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         },
       });
     } else if (name === 'join') {
-      // Fetch the full member data from Discord API to get the voice state
-      const memberData = await fetch(`https://discord.com/api/v10/guilds/${guild_id}/members/${member.user.id}`, {
-        headers: {
-          Authorization: `Bot ${DISCORD_TOKEN}`,
-        },
-      }).then(res => res.json());
-
-      const voiceChannelId = memberData?.voice?.channel_id; // Get voice channel ID from the member's data
-
-      if (!voiceChannelId) {
+      
+      try {
+        joinVoiceChannel({
+          channelId: voiceChannel.id,
+          guildId: voiceChannel.guild.id,
+          adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+        });
+      
+        // Join the voice channel
+      if (!voiceChannel) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
@@ -75,21 +74,13 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         });
       }
 
-      // Get the guild object (for use with voice adapter)
-      const guild = memberData.guild;
-
-      try {
-        // Join the voice channel
-        const connection = joinVoiceChannel({
-          channelId: voiceChannelId,
-          guildId: guild_id,
-          adapterCreator: guild.voiceAdapterCreator,
-        });
+      // Join the voice channel
+      
 
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            content: `Joined the voice channel: ${voiceChannelId}`,
+            content: `Joined ${voiceChannel.name}`,
           },
         });
       } catch (error) {
@@ -97,7 +88,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            content: 'Failed to join the voice channel',
+            content: 'Failed to join voice channel',
           },
         });
       }
