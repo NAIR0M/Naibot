@@ -55,7 +55,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
           content: `${getRandomCatGif()}`,
         },
       });
-    } else if (name == join) {
+    } else if (name === 'join') {
       connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
         try {
           await Promise.race([
