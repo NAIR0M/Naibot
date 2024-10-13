@@ -35,7 +35,7 @@ const CAT_COMMAND = {
 };
 
 // Command containing options
-const CHALLENGE_COMMAND = {
+/*const CHALLENGE_COMMAND = {
   name: 'challenge',
   description: 'Challenge to a match of rock paper scissors',
   options: [
@@ -50,7 +50,7 @@ const CHALLENGE_COMMAND = {
   type: 1,
   integration_types: [0, 1],
   contexts: [0, 2],
-};
+};*/
 
 const VOICE_COMMAND = {
   name: 'join',
