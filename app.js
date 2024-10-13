@@ -56,20 +56,18 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         },
       });
     } else if (name == join) {
-      async (interaction) => {
-        const voiceChannel = interaction.member.voice.channel;
-        if (!voiceChannel) {
-          return interaction.reply('You need to be in a voice channel to use this command!');
-        }
-    
+      connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
         try {
-          await voiceChannel.join();
-          return interaction.reply('Joined the voice channel!');
+          await Promise.race([
+            entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+            entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+          ]);
+          // Seems to be reconnecting to a new channel - ignore disconnect
         } catch (error) {
-          console.error(error);
-          return interaction.reply('There was an error trying to join the voice channel!');
+          // Seems to be a real disconnect which SHOULDN'T be recovered from
+          connection.destroy();
         }
-      }
+      });
     }
 
     console.error(`unknown command: ${name}`);
