@@ -7,60 +7,47 @@ import {
 } from 'discord-interactions';
 import { getRandomEmoji } from './utils.js';
 import { getRandomCatGif } from './utils.js';
-import { joinVoiceChannel } from '@discordjs/voice';
+import fetch from 'node-fetch';
 
-// Create an express app
 const app = express();
-// Get port, or default to 3000
 const PORT = process.env.PORT || 3000;
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
-/**
- * Interactions endpoint URL where Discord will send HTTP requests
- * Parse request body and verifies incoming requests using discord-interactions package
- */
 app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async function (req, res) {
-  // Interaction type and data
-  const { type, data } = req.body;
+  const { type, data, guild_id, member } = req.body;
 
-  /**
-   * Handle verification requests
-   */
   if (type === InteractionType.PING) {
     return res.send({ type: InteractionResponseType.PONG });
   }
 
-  /**
-   * Handle slash command requests
-   * See https://discord.com/developers/docs/interactions/application-commands#slash-commands
-   */
   if (type === InteractionType.APPLICATION_COMMAND) {
     const { name } = data;
 
-    // "test" command
     if (name === 'test') {
-      // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          // Fetches a random emoji to send from a helper function
           content: `hello world ${getRandomEmoji()}`,
         },
       });
     } else if (name === 'cat') {
-      // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          // Fetches a random GIF to send from a helper function
           content: `${getRandomCatGif()}`,
         },
       });
     } else if (name === 'join') {
-      // Get the member's voice channel
-      const channel = data.member?.voice?.channel;
-  
-      // Check if the member is in a voice channel
-      if (!channel) {
+      // Fetch the full member data from Discord API to get the voice state
+      const memberData = await fetch(`https://discord.com/api/v10/guilds/${guild_id}/members/${member.user.id}`, {
+        headers: {
+          Authorization: `Bot ${DISCORD_TOKEN}`,
+        },
+      }).then(res => res.json());
+
+      const voiceChannelId = memberData?.voice?.channel_id;
+
+      if (!voiceChannelId) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
@@ -68,22 +55,19 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
           },
         });
       }
-  
-      // Join the voice channel
-  
+
+      // Here you can handle joining the voice channel using your voice bot logic
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: `Joined the voice channel: ${channel.name}`,
+          content: `Joined the voice channel: ${voiceChannelId}`,
         },
       });
     }
 
-    console.error(`unknown command: ${name}`);
     return res.status(400).json({ error: 'unknown command' });
   }
 
-  console.error('unknown interaction type', type);
   return res.status(400).json({ error: 'unknown interaction type' });
 });
 
